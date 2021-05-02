@@ -1,0 +1,48 @@
+{
+  "lessonsPosition": {
+    "7:30": 1,
+    "8:15": 2,
+    "9:10": 3,
+    "10:10": 4,
+    "11:00": 5
+  },
+  "week": [
+    [],
+    [
+      { "time": "7:30", "subject": "Redação", "teacher": "Rayrinne" },
+      { "time": "8:15", "subject": "Química", "teacher": "Paulo José" },
+      { "time": "9:10", "subject": "História", "teacher": "Jailson" },
+      { "time": "10:10", "subject": "Sociologia", "teacher": "Lucas" },
+      { "time": "11:00", "subject": "Geografia", "teacher": "Joana" }
+    ],
+    [
+      { "time": "7:30", "subject": "Literatura", "teacher": "Rayrinne" },
+      { "time": "8:15", "subject": "Português", "teacher": "Rayrinne" },
+      { "time": "9:10", "subject": "Matemática", "teacher": "Iran" },
+      { "time": "10:10", "subject": "Matemática", "teacher": "Iran" },
+      { "time": "11:00", "subject": "Física", "teacher": "Robbyslândio" }
+    ],
+    [
+      { "time": "7:30", "subject": "Espanhol", "teacher": "Kaline" },
+      { "time": "8:15", "subject": "Geografia", "teacher": "Joana" },
+      { "time": "9:10", "subject": "Filosofia", "teacher": "Lucas" },
+      { "time": "10:10", "subject": "História", "teacher": "Jailson" },
+      { "time": "11:00", "subject": "Matemática", "teacher": "Iran" }
+    ],
+    [
+      { "time": "7:30", "subject": "Física", "teacher": "Robbyslândio" },
+      { "time": "8:15", "subject": "Biologia", "teacher": "Wagner" },
+      { "time": "9:10", "subject": "Português", "teacher": "Rayrinne" },
+      { "time": "10:10", "subject": "Biologia", "teacher": "Wagner" },
+      { "time": "11:00", "subject": "Artes/Geometria", "teacher": "Valeska" }
+    ],
+    [
+      { "time": "7:30", "subject": "Química", "teacher": "Paulo" },
+      { "time": "8:15", "subject": "Português", "teacher": "Rayrinne" },
+      { "time": "9:10", "subject": "Inglês", "teacher": "Tatiana" },
+      { "time": "10:10", "subject": "Química", "teacher": "Paulo" },
+      { "time": "11:00", "subject": "Português", "teacher": "Rayrinne" }
+    ],
+    []
+  ]
+}

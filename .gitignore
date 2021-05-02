@@ -1,0 +1,10 @@
+node_modules/
+dist/
+logs/
+
+yarn.lock
+yarn-error.log
+package-json.lock
+.env
+
+session.data.json
