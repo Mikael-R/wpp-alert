@@ -18,14 +18,27 @@ export class LessonsAlert {
     this.chatsToAlert = chatsToAlert
   }
 
-  public addNewChatToAlert(chatId: ChatId) {
+  public addChatToAlert(chatId: ChatId) {
     if (this.chatsToAlert.includes(chatId)) {
       this.client
-        .sendText(chatId, 'Eu já estou mandando alertas para vocês!')
+        .sendText(chatId, 'Eu já estou mandando notificações para vocês!')
         .catch(() => console.log('Algo de errado aconteceu com', chatId))
     } else {
       this.client
-        .sendText(chatId, 'Agora eu mando alertas para vocês!')
+        .sendText(chatId, 'Agora eu mando notificações para vocês!')
+        .catch(() => console.log('Algo de errado aconteceu com', chatId))
+    }
+  }
+
+  public removeChatToAlert(chatId: ChatId) {
+    if (this.chatsToAlert.includes(chatId)) {
+      this.chatsToAlert.splice(this.chatsToAlert.indexOf(chatId), 1)
+      this.client
+        .sendText(chatId, 'Agora eu não mando mais notificações para vocês!')
+        .catch(() => console.log('Algo de errado aconteceu com', chatId))
+    } else {
+      this.client
+        .sendText(chatId, 'Eu ainda não mando notificações para vocês!')
         .catch(() => console.log('Algo de errado aconteceu com', chatId))
     }
   }

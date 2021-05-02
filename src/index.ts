@@ -12,8 +12,14 @@ function start(client: Client) {
     if (isGroupMsg) {
       if (type === 'chat') {
         switch (message.content) {
-          case '!alertar':
-            lessonsAlert.addNewChatToAlert(message.from)
+          case '!notificar':
+            return lessonsAlert.addChatToAlert(message.from)
+
+          case '!parar-notificações':
+            return lessonsAlert.removeChatToAlert(message.from)
+
+          default:
+            return null
         }
       }
     }
