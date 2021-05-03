@@ -79,15 +79,22 @@ export class LessonsAlert {
 
   private miliSecondsToStartLesson(time: string) {
     const currentDate = new Date()
-    const timeSplited = time.split(':')
+    const currentHoursInSeconds = currentDate.getHours() * 3600
+    const currentMinutesInSeconds = currentDate.getMinutes() * 60
+    const currentSeconds = currentDate.getSeconds()
 
-    const [currentHours, currentMinutes] = [currentDate.getHours(), 14]
-    const [hours, minutes] = [Number(timeSplited[0]), Number(timeSplited[1])]
+    const timeSplited = time.split(':')
+    const [hoursInSeconds, minutesInSeconds] = [
+      Number(timeSplited[0]) * 3600,
+      Number(timeSplited[1]) * 60
+    ]
 
     const miliSecondsToStart =
-      (currentHours * 3600 +
-        currentMinutes * 60 -
-        (hours * 3600 + minutes * 60)) *
+      (currentHoursInSeconds +
+        currentMinutesInSeconds +
+        currentSeconds -
+        (hoursInSeconds + minutesInSeconds) -
+        15) *
       1000
 
     return miliSecondsToStart < 0 ? miliSecondsToStart * -1 : miliSecondsToStart
