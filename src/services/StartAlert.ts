@@ -1,4 +1,5 @@
 import { ChatId, Client } from '@open-wa/wa-automate'
+import autoBind from 'auto-bind'
 
 import { week, lessonsPosition } from '../week.json'
 
@@ -16,6 +17,8 @@ export class LessonsAlert {
   constructor(private client: Client, private chatsToAlert: ChatId[]) {
     this.client = client
     this.chatsToAlert = chatsToAlert
+
+    autoBind(this)
   }
 
   public addChatToAlert(chatId: ChatId) {
@@ -24,6 +27,7 @@ export class LessonsAlert {
         .sendText(chatId, 'Eu já estou mandando notificações para vocês!')
         .catch(() => console.log('Algo de errado aconteceu com', chatId))
     } else {
+      this.chatsToAlert.push(chatId)
       this.client
         .sendText(chatId, 'Agora eu mando notificações para vocês!')
         .catch(() => console.log('Algo de errado aconteceu com', chatId))
@@ -46,7 +50,7 @@ export class LessonsAlert {
   private async showMessagePrepareToStartLesson(lesson) {
     console.log('a aula vai começar em 3 minutos', lesson)
 
-    this.chatsToAlert.forEach(chat => {
+    this.chatsToAlert?.forEach(chat => {
       this.client
         .sendText(chat, 'A aula vai começar em 3 minutos')
         .catch(() => console.log('Não consegui alertar o chat', chat))
@@ -56,7 +60,7 @@ export class LessonsAlert {
   private async showMessageLessonStart(lesson) {
     console.log('a aula começou', lesson)
 
-    this.chatsToAlert.forEach(chat => {
+    this.chatsToAlert?.forEach(chat => {
       this.client
         .sendText(chat, 'A aula começou')
         .catch(() => console.log('Não consegui alertar o chat', chat))
@@ -66,21 +70,18 @@ export class LessonsAlert {
   private async showMessageNotHaveLesson() {
     console.log('hoje não tem aula')
 
-    this.chatsToAlert.forEach(chat => {
+    this.chatsToAlert?.forEach(chat => {
       this.client
         .sendText(chat, 'Hoje não tem aula')
         .catch(() => console.log('Não consegui alertar o chat', chat))
     })
   }
 
-  private getMiliSecondsToStartLesson(time: string) {
+  private miliSecondsToStartLesson(time: string) {
     const currentDate = new Date()
     const timeSplited = time.split(':')
 
-    const [currentHours, currentMinutes] = [
-      currentDate.getHours(),
-      currentDate.getMinutes()
-    ]
+    const [currentHours, currentMinutes] = [currentDate.getHours(), 14]
     const [hours, minutes] = [Number(timeSplited[0]), Number(timeSplited[1])]
 
     const miliSecondsToStart =
@@ -89,27 +90,27 @@ export class LessonsAlert {
         (hours * 3600 + minutes * 60)) *
       1000
 
-    return miliSecondsToStart
+    return miliSecondsToStart < 0 ? miliSecondsToStart * -1 : miliSecondsToStart
   }
 
-  private getCurrentWeekDay() {
+  private get currentWeekDay() {
     return new Date().getDay()
   }
 
-  private getTomorrowWeekDay() {
-    const currentWeekDay = this.getCurrentWeekDay()
+  private get tomorrowWeekDay() {
+    const currentWeekDay = this.currentWeekDay
     return currentWeekDay === 6 ? 0 : currentWeekDay + 1
   }
 
-  private getFirstLessonTomorrow() {
-    const tomorrowWeekDay = this.getTomorrowWeekDay()
+  private get firstLessonTomorrow() {
+    const tomorrowWeekDay = this.tomorrowWeekDay
     return week[tomorrowWeekDay].find(({ time }) => lessonsPosition[time] === 1)
   }
 
   public start() {
-    const currentWeekDay = this.getCurrentWeekDay()
-    const firstLessonTomorrow = this.getFirstLessonTomorrow()
-    const miliSecondsToStartFirstLessonTomorrow = this.getMiliSecondsToStartLesson(
+    const currentWeekDay = this.currentWeekDay
+    const firstLessonTomorrow = this.firstLessonTomorrow
+    const miliSecondsToStartFirstLessonTomorrow = this.miliSecondsToStartLesson(
       firstLessonTomorrow.time
     )
     const lessons = week[currentWeekDay]
@@ -118,7 +119,7 @@ export class LessonsAlert {
       const threeMinutesInMiliSeconds = 180000
 
       for (const lesson of lessons) {
-        const miliSecondsToStartLesson = this.getMiliSecondsToStartLesson(
+        const miliSecondsToStartLesson = this.miliSecondsToStartLesson(
           lesson.time
         )
 

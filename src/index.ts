@@ -5,6 +5,7 @@ import { LessonsAlert } from './services/StartAlert'
 
 function start(client: Client) {
   const lessonsAlert = new LessonsAlert(client, [])
+  lessonsAlert.start()
 
   client.onMessage(async message => {
     const { type, isGroupMsg } = message
