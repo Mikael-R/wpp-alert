@@ -12,12 +12,20 @@ function start(client: Client) {
 
     if (isGroupMsg) {
       if (type === 'chat') {
+        const chatId = message.from
+
         switch (message.content) {
           case '!notificar':
-            return lessonsAlert.addChatToAlert(message.from)
+            return lessonsAlert.addChatToAlert(chatId)
 
-          case '!parar-notificações':
-            return lessonsAlert.removeChatToAlert(message.from)
+          case '!parar-notificar':
+            return lessonsAlert.removeChatToAlert(chatId)
+
+          case '!aula-atual':
+            return lessonsAlert.showMessageCurrentLesson(chatId)
+
+          case '!prox-aula':
+            return lessonsAlert.showMessageNextLesson(chatId)
 
           default:
             return null

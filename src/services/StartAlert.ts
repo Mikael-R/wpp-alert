@@ -5,16 +5,6 @@ import { Lesson } from '../types'
 import { week } from '../week.json'
 
 export class LessonsAlert {
-  private weekDayName = {
-    0: 'domingo',
-    1: 'segunda-feira',
-    2: 'terça-feira',
-    3: 'quarta-feira',
-    4: 'quinta-feira',
-    5: 'sexta-feira',
-    6: 'sábado'
-  }
-
   constructor(private client: Client, private chatsToAlert: ChatId[]) {
     this.client = client
     this.chatsToAlert = chatsToAlert
@@ -26,24 +16,60 @@ export class LessonsAlert {
     return this.chatsToAlert.includes(chatId)
   }
 
-  private async showMessagePrepareToStartLesson(lesson) {
-    console.log('a aula vai começar em 3 minutos', lesson)
-
-    this.chatsToAlert?.forEach(chat => {
+  private async showMessagePrepareToStartLesson(lesson: Lesson) {
+    this.chatsToAlert?.forEach(chatId => {
       this.client
-        .sendText(chat, 'A aula vai começar em 3 minutos')
-        .catch(() => console.log('Não consegui alertar o chat', chat))
+        .sendText(
+          chatId,
+          `A *${lesson.position}°* aula de *${lesson.subject}* com *${lesson.teacher}* começa em 3 minutos.`
+        )
+        .catch(() => console.log('Não consegui alertar o chat', chatId))
     })
   }
 
-  private async showMessageLessonStart(lesson) {
-    console.log('a aula começou', lesson)
-
-    this.chatsToAlert?.forEach(chat => {
+  private async showMessageLessonStart(lesson: Lesson) {
+    this.chatsToAlert?.forEach(chatId => {
       this.client
-        .sendText(chat, 'A aula começou')
-        .catch(() => console.log('Não consegui alertar o chat', chat))
+        .sendText(
+          chatId,
+          `A *${lesson.position}°* aula de *${lesson.subject}* com *${lesson.teacher}* começou.`
+        )
+        .catch(() => console.log('Não consegui alertar o chat', chatId))
     })
+  }
+
+  public showMessageNextLesson(chatId: ChatId) {
+    const nextLesson = this.nextLesson
+
+    this.client
+      .sendText(
+        chatId,
+        `Próxima aula é a *${nextLesson.position}°* e será de *${
+          nextLesson.subject
+        }* com *${nextLesson.teacher}* as *${nextLesson.time}* daqui *${(
+          nextLesson.secondsToStart / 60
+        ).toFixed(0)}* minutos.`
+      )
+      .catch(() => console.log('Algo de errado aconteceu com', chatId))
+  }
+
+  public showMessageCurrentLesson(chatId: ChatId) {
+    const currentLesson = this.currentLesson
+
+    this.client
+      .sendText(
+        chatId,
+        `Aula atual é a *${currentLesson.position}°* de *${
+          currentLesson.subject
+        }* com *${currentLesson.teacher}* que iniciou *${
+          currentLesson.time
+        }* há *${((currentLesson.secondsToStart * -1) / 60).toFixed(
+          0
+        )}* minutos atrás e termina em *${
+          45 - Number(((currentLesson.secondsToStart * -1) / 60).toFixed(0))
+        }* minutos.`
+      )
+      .catch(() => console.log('Algo de errado aconteceu com', chatId))
   }
 
   private secondsToStartLesson(time: string) {
@@ -103,7 +129,7 @@ export class LessonsAlert {
       .catch(() => console.log('Algo de errado aconteceu com', chatId))
   }
 
-  public get nextLesson() {
+  private get nextLesson() {
     let nextLesson: Lesson
 
     let lessons = week[this.currentWeekDay()]
@@ -125,7 +151,7 @@ export class LessonsAlert {
     return nextLesson
   }
 
-  public get currentLesson() {
+  private get currentLesson() {
     let currentLesson: Lesson
 
     let lessons = week[this.currentWeekDay()]
