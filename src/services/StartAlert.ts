@@ -102,8 +102,15 @@ export class LessonsAlert {
   }
 
   private currentWeekDay(additionalDays: number = 0) {
-    const currentWeekDay = new Date().getDay() + additionalDays
-    return currentWeekDay === 7 ? 0 : currentWeekDay
+    let currentWeekDay = new Date().getDay()
+
+    while (additionalDays > 0) {
+      currentWeekDay += 1
+      additionalDays -= 1
+      if (currentWeekDay === 7) currentWeekDay = 0
+    }
+
+    return currentWeekDay
   }
 
   public addChatToAlert(chatId: ChatId) {
