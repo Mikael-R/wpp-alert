@@ -16,6 +16,10 @@ export class LessonsAlert {
     return this.chatsToAlert.includes(chatId)
   }
 
+  private toFixed(number: string | number) {
+    return Number(Number(number).toFixed(0))
+  }
+
   private async showMessagePrepareToStartLesson(lesson: Lesson) {
     this.chatsToAlert?.forEach(chatId => {
       this.client
@@ -39,15 +43,21 @@ export class LessonsAlert {
   }
 
   public showMessageNextLesson(chatId: ChatId) {
+    let returnMessage: string
     const nextLesson = this.nextLesson
 
-    const startInMinutes = (nextLesson.secondsToStart / 60).toFixed(0)
+    const startInMinutes = this.toFixed(nextLesson.secondsToStart / 60)
+
+    returnMessage = `Próxima aula é a *${nextLesson.position}°* e será de *${nextLesson.subject}* com *${nextLesson.teacher}* as *${nextLesson.time}* daqui `
+
+    if (startInMinutes > 60) {
+      returnMessage += `*${this.toFixed(startInMinutes / 60)}* horas.`
+    } else {
+      returnMessage += `*${startInMinutes}* minutos.`
+    }
 
     this.client
-      .sendText(
-        chatId,
-        `Próxima aula é a *${nextLesson.position}°* e será de *${nextLesson.subject}* com *${nextLesson.teacher}* as *${nextLesson.time}* daqui *${startInMinutes}* minutos.`
-      )
+      .sendText(chatId, returnMessage)
       .catch(() => console.log('Algo de errado aconteceu com', chatId))
   }
 
@@ -55,11 +65,10 @@ export class LessonsAlert {
     let returnMessage: string
     const currentLesson = this.currentLesson
 
-    const startedAtInMinutes = Number(
-      ((currentLesson.secondsToStart * -1) / 60).toFixed(0)
+    const startedAtInMinutes = this.toFixed(
+      (currentLesson.secondsToStart * -1) / 60
     )
-
-    const endAtInMinutes = Number((45 - startedAtInMinutes).toFixed(0))
+    const endAtInMinutes = this.toFixed(45 - startedAtInMinutes)
 
     if (endAtInMinutes > 1) {
       returnMessage = `Aula atual é a *${currentLesson.position}°* de *${currentLesson.subject}* com *${currentLesson.teacher}* que iniciou *${currentLesson.time}* há *${startedAtInMinutes}* minutos atrás e termina em *${endAtInMinutes}* minutos.`
