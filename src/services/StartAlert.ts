@@ -41,34 +41,34 @@ export class LessonsAlert {
   public showMessageNextLesson(chatId: ChatId) {
     const nextLesson = this.nextLesson
 
+    const startInMinutes = (nextLesson.secondsToStart / 60).toFixed(0)
+
     this.client
       .sendText(
         chatId,
-        `Próxima aula é a *${nextLesson.position}°* e será de *${
-          nextLesson.subject
-        }* com *${nextLesson.teacher}* as *${nextLesson.time}* daqui *${(
-          nextLesson.secondsToStart / 60
-        ).toFixed(0)}* minutos.`
+        `Próxima aula é a *${nextLesson.position}°* e será de *${nextLesson.subject}* com *${nextLesson.teacher}* as *${nextLesson.time}* daqui *${startInMinutes}* minutos.`
       )
       .catch(() => console.log('Algo de errado aconteceu com', chatId))
   }
 
   public showMessageCurrentLesson(chatId: ChatId) {
+    let returnMessage: string
     const currentLesson = this.currentLesson
 
+    const startedAtInMinutes = Number(
+      ((currentLesson.secondsToStart * -1) / 60).toFixed(0)
+    )
+
+    const endAtInMinutes = Number((45 - startedAtInMinutes).toFixed(0))
+
+    if (endAtInMinutes > 1) {
+      returnMessage = `Aula atual é a *${currentLesson.position}°* de *${currentLesson.subject}* com *${currentLesson.teacher}* que iniciou *${currentLesson.time}* há *${startedAtInMinutes}* minutos atrás e termina em *${endAtInMinutes}* minutos.`
+    } else {
+      returnMessage = 'Nesse momento não há nenhuma aula sendo lecionada.'
+    }
+
     this.client
-      .sendText(
-        chatId,
-        `Aula atual é a *${currentLesson.position}°* de *${
-          currentLesson.subject
-        }* com *${currentLesson.teacher}* que iniciou *${
-          currentLesson.time
-        }* há *${((currentLesson.secondsToStart * -1) / 60).toFixed(
-          0
-        )}* minutos atrás e termina em *${
-          45 - Number(((currentLesson.secondsToStart * -1) / 60).toFixed(0))
-        }* minutos.`
-      )
+      .sendText(chatId, returnMessage)
       .catch(() => console.log('Algo de errado aconteceu com', chatId))
   }
 
