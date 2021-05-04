@@ -31,6 +31,8 @@ function start(client: Client) {
       }
     }
   })
+
+  client.onAddedToGroup(({ id }) => console.log('Adicionado no grupo: ', id))
 }
 
 create({ sessionData: process.env.SESSION_DATA }).then(client => start(client))
