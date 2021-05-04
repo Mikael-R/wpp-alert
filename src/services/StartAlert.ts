@@ -73,7 +73,7 @@ export class LessonsAlert {
   }
 
   private secondsToStartLesson(time: string) {
-    const twelveHoursInSeconds = 43200
+    const twentyFourHoursInSeconds = 86400
 
     const currentDate = new Date()
     const currentTimeInSeconds =
@@ -88,7 +88,7 @@ export class LessonsAlert {
     const secondsToStart = lessonTimeInSeconds - (currentTimeInSeconds - 15)
 
     return secondsToStart < 0
-      ? secondsToStart + twelveHoursInSeconds
+      ? secondsToStart + twentyFourHoursInSeconds
       : secondsToStart
   }
 
