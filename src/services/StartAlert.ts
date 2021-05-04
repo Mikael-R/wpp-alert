@@ -48,7 +48,7 @@ export class LessonsAlert {
 
     const startInMinutes = this.toFixed(nextLesson.secondsToStart / 60)
 
-    returnMessage = `Próxima aula é a *${nextLesson.position}°* e será de *${nextLesson.subject}* com *${nextLesson.teacher}* as *${nextLesson.time}* daqui `
+    returnMessage = `Próxima aula é a *${nextLesson.position}°* e será de *${nextLesson.subject}* com *${nextLesson.teacher}* às *${nextLesson.time}* daqui `
 
     if (startInMinutes > 60) {
       returnMessage += `*${this.toFixed(startInMinutes / 60)}* horas.`
@@ -112,9 +112,9 @@ export class LessonsAlert {
     if (!this.chatIsIncluded(chatId)) {
       this.chatsToAlert.push(chatId)
 
-      returnMessage = 'Agora eu mando notificações para vocês!'
+      returnMessage = '🟢 Notificações ativadas'
     } else {
-      returnMessage = 'Eu já estou mandando notificações para vocês!'
+      returnMessage = '🟡 Notificações já estão ativadas'
     }
 
     this.client
@@ -128,9 +128,9 @@ export class LessonsAlert {
     if (this.chatIsIncluded(chatId)) {
       this.chatsToAlert.splice(this.chatsToAlert.indexOf(chatId), 1)
 
-      returnMessage = 'Agora eu não mando mais notificações para vocês!'
+      returnMessage = '🔴 Notificações desativadas'
     } else {
-      returnMessage = 'Eu ainda não mando notificações para vocês!'
+      returnMessage = '🟡 Notificações não estão ativas'
     }
 
     this.client

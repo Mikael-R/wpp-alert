@@ -8,28 +8,26 @@ function start(client: Client) {
   lessonsAlert.start()
 
   client.onMessage(async message => {
-    const { type, isGroupMsg } = message
+    const { type } = message
 
-    if (isGroupMsg) {
-      if (type === 'chat') {
-        const chatId = message.from
+    if (type === 'chat') {
+      const chatId = message.from
 
-        switch (message.content) {
-          case '!notificar':
-            return lessonsAlert.addChatToAlert(chatId)
+      switch (message.content) {
+        case '!notificar':
+          return lessonsAlert.addChatToAlert(chatId)
 
-          case '!parar-notificar':
-            return lessonsAlert.removeChatToAlert(chatId)
+        case '!parar-notificar':
+          return lessonsAlert.removeChatToAlert(chatId)
 
-          case '!aula-atual':
-            return lessonsAlert.showMessageCurrentLesson(chatId)
+        case '!aula-atual':
+          return lessonsAlert.showMessageCurrentLesson(chatId)
 
-          case '!prox-aula':
-            return lessonsAlert.showMessageNextLesson(chatId)
+        case '!prox-aula':
+          return lessonsAlert.showMessageNextLesson(chatId)
 
-          default:
-            return null
-        }
+        default:
+          return null
       }
     }
   })
