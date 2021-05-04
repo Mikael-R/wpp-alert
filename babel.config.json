@@ -1,5 +1,6 @@
 {
   "presets": [
+    "minify",
     [
       "@babel/preset-env",
       {
@@ -19,5 +20,6 @@
         }
       }
     ]
-  ]
+  ],
+  "ignore": ["**/types.ts"]
 }

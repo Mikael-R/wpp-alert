@@ -21,6 +21,7 @@
     "@open-wa/wa-automate": "^3.11.8",
     "auto-bind": "^4.0.0",
     "babel-plugin-module-resolver": "^4.1.0",
+    "babel-preset-minify": "^0.5.1",
     "dotenv": "^8.2.0"
   },
   "devDependencies": {
