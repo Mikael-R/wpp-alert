@@ -185,7 +185,7 @@ export class LessonsAlert {
     const threeMinutesBeforeStartLessonInSeconds =
       nextLesson.secondsToStart - threeMinutesInSeconds
 
-    if (threeMinutesBeforeStartLessonInSeconds >= threeMinutesInSeconds)
+    if (threeMinutesBeforeStartLessonInSeconds > 30)
       setTimeout(
         this.showMessagePrepareToStartLesson,
         threeMinutesBeforeStartLessonInSeconds * 1000,
