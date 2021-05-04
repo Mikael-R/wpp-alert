@@ -70,7 +70,7 @@ export class LessonsAlert {
     )
     const endAtInMinutes = this.toFixed(45 - startedAtInMinutes)
 
-    if (endAtInMinutes > 1) {
+    if (startedAtInMinutes > 1) {
       returnMessage = `Aula atual é a *${currentLesson.position}°* de *${currentLesson.subject}* com *${currentLesson.teacher}* que iniciou *${currentLesson.time}* há *${startedAtInMinutes}* minutos atrás e termina em *${endAtInMinutes}* minutos.`
     } else {
       returnMessage = 'Nesse momento não há nenhuma aula sendo lecionada.'
