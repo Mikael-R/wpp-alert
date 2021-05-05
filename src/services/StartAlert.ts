@@ -20,7 +20,7 @@ export class LessonsAlert {
     return Number(Number(number).toFixed(0))
   }
 
-  private async showMessagePrepareToStartLesson(lesson: Lesson) {
+  private showMessagePrepareToStartLesson(lesson: Lesson) {
     this.chatsToAlert?.forEach(chatId => {
       this.client
         .sendText(
@@ -31,7 +31,7 @@ export class LessonsAlert {
     })
   }
 
-  private async showMessageLessonStart(lesson: Lesson) {
+  private showMessageLessonStart(lesson: Lesson) {
     this.chatsToAlert?.forEach(chatId => {
       this.client
         .sendText(
@@ -46,7 +46,7 @@ export class LessonsAlert {
     let returnMessage: string
     const nextLesson = this.nextLesson
 
-    const startInMinutes = this.toFixed(nextLesson.secondsToStart / 60)
+    const startInMinutes = this.toFixed(nextLesson.startAtInSeconds / 60)
 
     returnMessage = `Próxima aula é a *${nextLesson.position}°* e será de *${nextLesson.subject}* com *${nextLesson.teacher}* às *${nextLesson.time}* daqui `
 
@@ -63,18 +63,17 @@ export class LessonsAlert {
 
   public showMessageCurrentLesson(chatId: ChatId) {
     let returnMessage: string
-    const twelveHoursInSeconds = 43200
     const currentLesson = this.currentLesson
 
     const startedAtInMinutes = this.toFixed(
-      currentLesson.secondsToStart / 60
+      (currentLesson.endAtInSeconds * -1) / 60
     )
     const endAtInMinutes = this.toFixed(45 - startedAtInMinutes)
 
-    if ((startedAtInMinutes - twelveHoursInSeconds) > 0) {
-      returnMessage = `Aula atual é a *${currentLesson.position}°* de *${currentLesson.subject}* com *${currentLesson.teacher}* que iniciou *${currentLesson.time}* há *${startedAtInMinutes}* minutos atrás e termina em *${endAtInMinutes}* minutos.`
-    } else {
+    if (startedAtInMinutes >= 45) {
       returnMessage = 'Nesse momento não há nenhuma aula sendo lecionada.'
+    } else {
+      returnMessage = `Aula atual é a *${currentLesson.position}°* de *${currentLesson.subject}* com *${currentLesson.teacher}* que iniciou *${currentLesson.time}* há *${startedAtInMinutes}* minutos atrás e termina em *${endAtInMinutes}* minutos.`
     }
 
     this.client
@@ -82,8 +81,10 @@ export class LessonsAlert {
       .catch(() => console.log('Algo de errado aconteceu com', chatId))
   }
 
-  private secondsToStartLesson(time: string) {
-    const twentyFourHoursInSeconds = 86400
+  private lessonStartAndEnd(time: string) {
+    let startAtInSeconds: number
+    let endAtInSeconds: number
+    const fortyFiveMinutesInSeconds = 2700
 
     const currentDate = new Date()
     const currentTimeInSeconds =
@@ -97,9 +98,15 @@ export class LessonsAlert {
 
     const secondsToStart = lessonTimeInSeconds - (currentTimeInSeconds - 15)
 
-    return secondsToStart < 0
-      ? secondsToStart + twentyFourHoursInSeconds
-      : secondsToStart
+    if (secondsToStart < 0) {
+      startAtInSeconds = lessonTimeInSeconds - secondsToStart * -1
+      endAtInSeconds = secondsToStart
+    } else {
+      startAtInSeconds = secondsToStart
+      endAtInSeconds = secondsToStart - fortyFiveMinutesInSeconds
+    }
+
+    return { startAtInSeconds, endAtInSeconds }
   }
 
   private currentWeekDay(additionalDays: number = 0) {
@@ -152,18 +159,22 @@ export class LessonsAlert {
     let lessons = week[this.currentWeekDay()]
     let additionalDays = 0
 
-    while (!lessons?.length) {
+    while (!lessons.length) {
       lessons = week[this.currentWeekDay(additionalDays)]
       additionalDays += 1
     }
 
     lessons.forEach(lesson => {
-      const secondsToStart = this.secondsToStartLesson(lesson.time)
+      const { startAtInSeconds, endAtInSeconds } = this.lessonStartAndEnd(
+        lesson.time
+      )
 
-      if (!nextLesson || secondsToStart < nextLesson.secondsToStart) {
-        nextLesson = { ...lesson, secondsToStart }
+      if (!nextLesson || startAtInSeconds < nextLesson.startAtInSeconds) {
+        nextLesson = { ...lesson, startAtInSeconds, endAtInSeconds }
       }
     })
+
+    console.log('next lesson', nextLesson)
 
     return nextLesson
   }
@@ -180,17 +191,16 @@ export class LessonsAlert {
     }
 
     lessons.forEach(lesson => {
-      const twelveHoursInSeconds = 43200
-      const secondsToStart =
-        this.secondsToStartLesson(lesson.time) - twelveHoursInSeconds
+      const { startAtInSeconds, endAtInSeconds } = this.lessonStartAndEnd(
+        lesson.time
+      )
 
-      if (
-        !currentLesson ||
-        (secondsToStart < 0 && secondsToStart > currentLesson.secondsToStart)
-      ) {
-        currentLesson = { ...lesson, secondsToStart }
+      if (!currentLesson || startAtInSeconds > currentLesson.startAtInSeconds) {
+        currentLesson = { ...lesson, startAtInSeconds, endAtInSeconds }
       }
     })
+
+    console.log('current lesson', currentLesson)
 
     return currentLesson
   }
@@ -200,7 +210,7 @@ export class LessonsAlert {
     const nextLesson = this.nextLesson
 
     const threeMinutesBeforeStartLessonInSeconds =
-      nextLesson.secondsToStart - threeMinutesInSeconds
+      nextLesson.startAtInSeconds - threeMinutesInSeconds
 
     if (threeMinutesBeforeStartLessonInSeconds > 30)
       setTimeout(
@@ -211,13 +221,13 @@ export class LessonsAlert {
 
     setTimeout(
       this.showMessageLessonStart,
-      nextLesson.secondsToStart * 1000,
+      nextLesson.startAtInSeconds * 1000,
       nextLesson
     )
 
     setTimeout(
       this.start,
-      (nextLesson.secondsToStart + threeMinutesInSeconds * 2) * 1000
+      (nextLesson.startAtInSeconds - threeMinutesInSeconds * 2) * 1000
     )
   }
 }

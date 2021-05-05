@@ -3,5 +3,6 @@ export interface Lesson {
   teacher: string
   time: string
   position: number
-  secondsToStart: number
+  startAtInSeconds: number
+  endAtInSeconds: number
 }
