@@ -63,14 +63,15 @@ export class LessonsAlert {
 
   public showMessageCurrentLesson(chatId: ChatId) {
     let returnMessage: string
+    const twelveHoursInSeconds = 43200
     const currentLesson = this.currentLesson
 
     const startedAtInMinutes = this.toFixed(
-      (currentLesson.secondsToStart * -1) / 60
+      currentLesson.secondsToStart / 60
     )
     const endAtInMinutes = this.toFixed(45 - startedAtInMinutes)
 
-    if (startedAtInMinutes > 1) {
+    if ((startedAtInMinutes - twelveHoursInSeconds) > 0) {
       returnMessage = `Aula atual é a *${currentLesson.position}°* de *${currentLesson.subject}* com *${currentLesson.teacher}* que iniciou *${currentLesson.time}* há *${startedAtInMinutes}* minutos atrás e termina em *${endAtInMinutes}* minutos.`
     } else {
       returnMessage = 'Nesse momento não há nenhuma aula sendo lecionada.'
