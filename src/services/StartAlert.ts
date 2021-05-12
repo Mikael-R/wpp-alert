@@ -20,29 +20,45 @@ export class LessonsAlert {
     return Number(Number(number).toFixed(0))
   }
 
-  private showMessagePrepareToStartLesson(lesson: Lesson) {
-    this.chatsToAlert?.forEach(chatId => {
-      this.client
-        .sendText(
-          chatId,
-          `A *${lesson.position}°* aula de *${lesson.subject}* com *${lesson.teacher}* começa em 3 minutos.`
-        )
-        .catch(() => console.log('Não consegui alertar o chat', chatId))
-    })
+  private async showMessagePrepareToStartLesson(lesson: Lesson) {
+    const chatsToAlert = this.chatsToAlert
+    const promises = []
+
+    for (const chatId of chatsToAlert) {
+      const sendMessage = this.client.sendText(
+        chatId,
+        `A *${lesson.position}°* aula de *${lesson.subject}* com *${lesson.teacher}* começa em 3 minutos.`
+      )
+      promises.push(sendMessage)
+    }
+
+    try {
+      await Promise.all(promises)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
-  private showMessageLessonStart(lesson: Lesson) {
-    this.chatsToAlert?.forEach(chatId => {
-      this.client
-        .sendText(
-          chatId,
-          `A *${lesson.position}°* aula de *${lesson.subject}* com *${lesson.teacher}* começou.`
-        )
-        .catch(() => console.log('Não consegui alertar o chat', chatId))
-    })
+  private async showMessageLessonStart(lesson: Lesson) {
+    const chatsToAlert = this.chatsToAlert
+    const promises = []
+
+    for (const chatId of chatsToAlert) {
+      const sendMessage = this.client.sendText(
+        chatId,
+        `A *${lesson.position}°* aula de *${lesson.subject}* com *${lesson.teacher}* começou.`
+      )
+      promises.push(sendMessage)
+    }
+
+    try {
+      await Promise.all(promises)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
-  public showMessageNextLesson(chatId: ChatId) {
+  public async showMessageNextLesson(chatId: ChatId) {
     let returnMessage: string
     const nextLesson = this.nextLesson
 
@@ -56,35 +72,38 @@ export class LessonsAlert {
       returnMessage += `*${startInMinutes}* minutos.`
     }
 
-    this.client
-      .sendText(chatId, returnMessage)
-      .catch(() => console.log('Algo de errado aconteceu com', chatId))
+    try {
+      await this.client.sendText(chatId, returnMessage)
+    } catch (error) {
+      console.error(chatId, error)
+    }
   }
 
-  public showMessageCurrentLesson(chatId: ChatId) {
+  public async showMessageCurrentLesson(chatId: ChatId) {
     let returnMessage: string
     const currentLesson = this.currentLesson
+    const lessonDurationInMinutes = 45
 
-    const startedAtInMinutes = this.toFixed(
-      (currentLesson.endAtInSeconds * -1) / 60
-    )
+    const startedAtInMinutes = this.toFixed(currentLesson.endAtInSeconds / 60)
     const endAtInMinutes = this.toFixed(45 - startedAtInMinutes)
 
-    if (startedAtInMinutes >= 45) {
+    if (currentLesson.startAtInSeconds / 60 >= lessonDurationInMinutes) {
       returnMessage = 'Nesse momento não há nenhuma aula sendo lecionada.'
     } else {
       returnMessage = `Aula atual é a *${currentLesson.position}°* de *${currentLesson.subject}* com *${currentLesson.teacher}* que iniciou *${currentLesson.time}* há *${startedAtInMinutes}* minutos atrás e termina em *${endAtInMinutes}* minutos.`
     }
 
-    this.client
-      .sendText(chatId, returnMessage)
-      .catch(() => console.log('Algo de errado aconteceu com', chatId))
+    try {
+      await this.client.sendText(chatId, returnMessage)
+    } catch (error) {
+      console.error(chatId, error)
+    }
   }
 
   private lessonStartAndEnd(time: string) {
-    let startAtInSeconds: number
-    let endAtInSeconds: number
+    let startAndEnd
     const fortyFiveMinutesInSeconds = 2700
+    const twentyFourHoursInSeconds = 86400
 
     const currentDate = new Date()
     const currentTimeInSeconds =
@@ -99,14 +118,27 @@ export class LessonsAlert {
     const secondsToStart = lessonTimeInSeconds - (currentTimeInSeconds - 15)
 
     if (secondsToStart < 0) {
-      startAtInSeconds = lessonTimeInSeconds - secondsToStart * -1
-      endAtInSeconds = secondsToStart
+      startAndEnd = {
+        startAtInSeconds: lessonTimeInSeconds - secondsToStart,
+        endAtInSeconds: secondsToStart * -1
+      }
     } else {
-      startAtInSeconds = secondsToStart
-      endAtInSeconds = secondsToStart - fortyFiveMinutesInSeconds
+      startAndEnd = {
+        startAtInSeconds: secondsToStart,
+        endAtInSeconds: secondsToStart - fortyFiveMinutesInSeconds
+      }
     }
 
-    return { startAtInSeconds, endAtInSeconds }
+    const currentWeekDay = this.currentWeekDay()
+
+    if (currentWeekDay === 4) {
+      startAndEnd.startAtInSeconds += twentyFourHoursInSeconds
+    }
+    if (currentWeekDay === 5) {
+      startAndEnd.startAtInSeconds += twentyFourHoursInSeconds * 2
+    }
+
+    return startAndEnd
   }
 
   private currentWeekDay(additionalDays: number = 0) {
@@ -121,7 +153,7 @@ export class LessonsAlert {
     return currentWeekDay
   }
 
-  public addChatToAlert(chatId: ChatId) {
+  public async addChatToAlert(chatId: ChatId) {
     let returnMessage: string
 
     if (!this.chatIsIncluded(chatId)) {
@@ -132,12 +164,14 @@ export class LessonsAlert {
       returnMessage = '🟡 Notificações já estão ativadas'
     }
 
-    this.client
-      .sendText(chatId, returnMessage)
-      .catch(() => console.log('Algo de errado aconteceu com', chatId))
+    try {
+      await this.client.sendText(chatId, returnMessage)
+    } catch (error) {
+      console.error(chatId, error)
+    }
   }
 
-  public removeChatToAlert(chatId: ChatId) {
+  public async removeChatToAlert(chatId: ChatId) {
     let returnMessage: string
 
     if (this.chatIsIncluded(chatId)) {
@@ -148,9 +182,11 @@ export class LessonsAlert {
       returnMessage = '🟡 Notificações não estão ativas'
     }
 
-    this.client
-      .sendText(chatId, returnMessage)
-      .catch(() => console.log('Algo de errado aconteceu com', chatId))
+    try {
+      await this.client.sendText(chatId, returnMessage)
+    } catch (error) {
+      console.error(chatId, error)
+    }
   }
 
   private get nextLesson() {
@@ -173,8 +209,6 @@ export class LessonsAlert {
         nextLesson = { ...lesson, startAtInSeconds, endAtInSeconds }
       }
     })
-
-    console.log('next lesson', nextLesson)
 
     return nextLesson
   }
@@ -199,8 +233,6 @@ export class LessonsAlert {
         currentLesson = { ...lesson, startAtInSeconds, endAtInSeconds }
       }
     })
-
-    console.log('current lesson', currentLesson)
 
     return currentLesson
   }
