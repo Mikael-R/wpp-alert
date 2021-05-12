@@ -18,7 +18,7 @@
     "@babel/node": "^7.10.1",
     "@babel/preset-env": "^7.10.2",
     "@babel/preset-typescript": "^7.10.1",
-    "@open-wa/wa-automate": "^3.11.8",
+    "@open-wa/wa-automate": "^3.13.2",
     "auto-bind": "^4.0.0",
     "babel-plugin-module-resolver": "^4.1.0",
     "babel-preset-minify": "^0.5.1",
