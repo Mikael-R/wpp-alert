@@ -1,10 +1,10 @@
 import 'dotenv/config'
 import { create, Client } from '@open-wa/wa-automate'
 
-import { LessonsAlert } from './services/StartAlert'
+import CommandService from './services/CommandService'
 
 function start(client: Client) {
-  const lessonsAlert = new LessonsAlert(client, [])
+  const lessonsAlert = new CommandService(client, [])
   lessonsAlert.start()
 
   client.onMessage(async message => {

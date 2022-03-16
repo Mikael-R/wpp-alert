@@ -1,11 +1,7 @@
 {
-  "name": "wpp-alert",
+  "name": "wpp-bot",
   "version": "1.0.0",
   "main": "dist/index.js",
-  "author": {
-    "name": "Mikael Rolim",
-    "email": "mikarg9@gmail.com"
-  },
   "scripts": {
     "format": "eslint src --ext ts",
     "build": "babel src --extensions \".js,.ts\" --out-dir dist --copy-files --no-copy-ignored",
@@ -18,8 +14,7 @@
     "@babel/node": "^7.10.1",
     "@babel/preset-env": "^7.10.2",
     "@babel/preset-typescript": "^7.10.1",
-    "@open-wa/wa-automate": "^3.13.2",
-    "auto-bind": "^4.0.0",
+    "@open-wa/wa-automate": "^4.32.11",
     "babel-plugin-module-resolver": "^4.1.0",
     "babel-preset-minify": "^0.5.1",
     "dotenv": "^8.2.0"

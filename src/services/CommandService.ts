@@ -1,10 +1,10 @@
 import { ChatId, Client } from '@open-wa/wa-automate'
-import autoBind from 'auto-bind'
 
-import { Lesson } from '../types'
 import { week } from '../week.json'
 
-export class LessonsAlert {
+import type { Lesson } from '../types/index'
+
+class CommandService {
   private fortyFiveMinutesInSeconds: number
   private twentyFourHoursInSeconds: number
 
@@ -13,8 +13,6 @@ export class LessonsAlert {
     this.chatsToAlert = chatsToAlert
     this.fortyFiveMinutesInSeconds = 2700
     this.twentyFourHoursInSeconds = 86400
-
-    autoBind(this)
   }
 
   private chatIsIncluded(chatId: ChatId) {
@@ -276,3 +274,5 @@ export class LessonsAlert {
     )
   }
 }
+
+export default CommandService
